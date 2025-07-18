@@ -1,37 +1,92 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <title>Weather App</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
-    <link rel="icon" href="{{ url_for('static', filename='favicon.png') }}">
+  <meta charset="UTF-8">
+  <title>Whether Weather</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+  <link rel="icon" href="{{ url_for('static', filename='favicon.png') }}">
 </head>
 <body class="{{ background }}">
-    <div class="container">
-        <h1>🌤 Weather App</h1>
-        <form method="POST">
-            <input type="text" name="city" placeholder="Enter city name" required>
-            <button type="submit">Get Weather</button>
+  <div class="container py-4">
+    <div class="card text-center mx-auto mb-4 shadow-md" style="max-width: 500px;">
+      <div class="card-body">
+        <h2 class="text-center mb-2">Whether Weather</h2>
+
+        <form method="POST" class="d-flex justify-content-center gap-2">
+          <input type="text" name="city" class="form-control w-50" placeholder="Enter city name" required>
+          <button type="submit" class="btn btn-primary">Search</button>
         </form>
-
-        {% with messages = get_flashed_messages() %}
-            {% if messages %}
-                <ul class="error">
-                {% for message in messages %}
-                    <li>{{ message }}</li>
-                {% endfor %}
-                </ul>
-            {% endif %}
-        {% endwith %}
-
-        {% if weather %}
-            <div class="weather-info">
-                <h2>{{ weather.city }}</h2>
-                <p>{{ weather.temperature }} °C <span class="feelslike">(feels like: {{ weather.feels_like }} °C)</span></p>
-                <p>{{ weather.description }}</p>
-                <img src="http://openweathermap.org/img/wn/{{ weather.icon }}@2x.png" alt="weather icon" class="weather-icon">
-            </div>
-        {% endif %}
+      </div>
     </div>
+
+    {% with messages = get_flashed_messages() %}
+      {% if messages %}
+        <div class="alert alert-danger text-center mx-auto" style="max-width: 500px;">
+          {% for message in messages %}
+            <p class="mb-0">{{ message }}</p>
+          {% endfor %}
+        </div>
+      {% endif %}
+    {% endwith %}
+
+    {% if weather %}
+      <div class="card text-center mx-auto mb-4 shadow-md" style="max-width: 500px;">
+        <div class="card-body">
+          <h3 class="card-title">{{ weather.city }}</h3>
+          <img src="http://openweathermap.org/img/wn/{{ weather.icon }}@2x.png" alt="weather icon">
+          <p class="card-text display-6">{{ weather.temperature }}°C</p>
+          <p class="text-muted">Feels like: {{ weather.feels_like }}°C</p>
+          <p class="text-capitalize mb-0">{{ weather.description }}</p>
+        </div>
+      </div>
+    {% endif %}
+
+    {% if hourly %}
+      <div class="card text-center mx-auto mb-4 shadow-md" style="max-width: 500px;">
+        <div class="card-body">
+          <h4 class="text-center mb-3">Hourly Forecast</h4>
+          <div class="row justify-content-center">
+            {% for hour in hourly %}
+              <div class="col-md-2 col-6 gx-0">
+                <div class="text-center">
+                  <div class="p-1">
+                    <p class="mb-1 small">{{ hour.time.split(' ')[1][:5] }}</p>
+                    <img src="http://openweathermap.org/img/wn/{{ hour.icon }}@2x.png" class="img-fluid" alt="icon">
+                    <p class="mb-0">{{ hour.temp }}°C</p>
+                    <p class="text-muted extra-small text-capitalize mb-0">{{ hour.description }}</p>
+                  </div>
+                </div>
+              </div>
+            {% endfor %}
+          </div>
+        </div>
+      </div>
+    {% endif %}
+
+    {% if daily %}
+      <div class="card text-center mx-auto mb-4 shadow-md" style="max-width: 500px;">
+        <div class="card-body">
+          <h4 class="text-center mb-3">5-Day Forecast</h4>
+          <div class="row justify-content-center">
+            {% for day in daily %}
+              <div class="col-md-2 col-6 gx-0">
+                <div class="text-center">
+                  <div class="p-1">
+                    <p class="fw-bold extra-small">{{ day.date }}</p>
+                    <img src="http://openweathermap.org/img/wn/{{ day.icon }}@2x.png" class="img-fluid" alt="icon">
+                    <p class="mb-0">{{ day.temp }}°C</p>
+                    <p class="text-muted extra-small text-capitalize mb-0">{{ day.description }}</p>
+                  </div>
+                </div>
+              </div>
+            {% endfor %}
+          </div>
+        </div>
+      </div>
+    {% endif %}
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
